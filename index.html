@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Luxura • Swagger & SEO Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0a0a; --panel:#111; --line:#1e1e1e; --fg:#f7f7f5; --muted:#b9b9b4;
+      --gold:#d4af37; --gold-2:#b8932e; --danger:#ff6b6b; --ok:#8BE28B;
+      --chip:#151515;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:16px;flex-wrap:wrap}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:48px;height:48px;border-radius:10px;
+      background:linear-gradient(135deg,var(--gold),var(--gold-2));
+      display:flex;align-items:center;justify-content:center;
+      overflow:hidden; box-shadow:0 0 0 1px #2a2a2a;
+    }
+    .logo img{ width:100%; height:100%; object-fit:contain; object-position:center; }
+    .title{font-weight:800;letter-spacing:.2px;font-size:18px}
+    .muted{color:var(--muted);font-size:12px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+    .grid{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+    @media (max-width: 900px){.grid{grid-template-columns:1fr}}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea{
+      width:100%;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0d0d0d;color:var(--fg)
+    }
+    textarea{min-height:90px;resize:vertical}
+    button{
+      padding:10px 14px;border:1px solid var(--gold-2);border-radius:12px;background:var(--gold);
+      color:#111;cursor:pointer;font-weight:800
+    }
+    .btn-ghost{background:transparent;color:var(--fg);border-color:var(--line);font-weight:700}
+    .btn-danger{background:transparent;color:var(--danger);border-color:#3a1b1b}
+    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab{
+      background:var(--chip); border:1px solid var(--line); color:var(--fg);
+      padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:700; font-size:13px;
+    }
+    .tab.active{border-color:var(--gold-2); box-shadow:0 0 0 1px rgba(212,175,55,.25) inset}
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#0d0d0d;font-size:12px;color:var(--muted)}
+    .ok{color:var(--ok)} .err{color:var(--danger)}
+    pre{
+      white-space:pre-wrap; word-break:break-word;
+      background:#0d0d0d;border:1px solid var(--line);border-radius:12px;padding:12px;color:#eaeae5;
+      max-height:420px; overflow:auto; font-size:12px; line-height:1.35;
+    }
+    iframe{
+      width:100%;
+      height:900px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#0d0d0d;
+    }
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .spacer{height:10px}
+    .small{font-size:12px}
+    .hint{color:var(--muted);font-size:12px;margin-top:6px}
+    /* Toaster */
+    .toast{
+      position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px);
+      background:#141414; border:1px solid #2a2a2a; color:var(--fg);
+      padding:10px 14px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.35);
+      opacity:0; pointer-events:none; transition:all .25s ease; z-index:9999; font-size:14px;
+    }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast.ok{ border-color:#214a21; color:#d8f7d8 }
+    .toast.err{ border-color:#5a2a2a; color:#ffd7d7 }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">
+          <img id="logoImg"
+               src="https://static.wixstatic.com/media/de6cdb_1818e78bd1294722811849c73ea77774~mv2.png"
+               alt="Luxura Logo">
+        </div>
+        <div>
+          <div class="title">Luxura — Swagger & SEO Pro</div>
+          <div class="muted">Dashboard admin (docs + SEO) • style Luxura noir & or</div>
+        </div>
+      </div>
+      <div class="pill">
+        <span>API:</span>
+        <span id="apiPill" class="ok">—</span>
+        <span class="muted">v1.0</span>
+      </div>
+    </div>
+
+    <!-- CONFIG + QUICK LINKS -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="grid">
+        <div>
+          <label>URL de l’API (Render)</label>
+          <input id="apiUrl" value="https://luxura-inventory-api.onrender.com" oninput="saveCfg();syncDerivedUrls();" />
+          <div class="hint">Ex: https://luxura-inventory-api.onrender.com</div>
+        </div>
+        <div>
+          <label>Clé API (si utilisée)</label>
+          <input id="apiKey" placeholder="(laisser vide)" oninput="saveCfg()" />
+          <div class="hint">Optionnel — seulement si ton API l’exige.</div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="toolbar">
+        <button onclick="testHealth()">Tester Health</button>
+        <button class="btn-ghost" onclick="openDocs()">Swagger /docs</button>
+        <button class="btn-ghost" onclick="openLastSync()">Dernier Sync</button>
+        <button class="btn-ghost" onclick="openExportXls()">Export XLS (Entrepôt)</button>
+        <span id="testStatus" class="muted"></span>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="tabs">
+        <div class="tab active" id="tabSwagger" onclick="showTab('swagger')">Swagger intégré</div>
+        <div class="tab" id="tabSeoPreview" onclick="showTab('preview')">SEO Preview</div>
+        <div class="tab" id="tabSeoApply" onclick="showTab('apply')">SEO Apply</div>
+      </div>
+
+      <!-- SWAGGER -->
+      <div id="panelSwagger" style="margin-top:14px;">
+        <div class="muted small" style="margin-bottom:10px;">
+          Swagger complet (lecture/try-it). Si ça ne s’affiche pas, c’est souvent une politique d’iframe côté serveur.
+        </div>
+        <iframe id="swaggerFrame" src=""></iframe>
+      </div>
+
+      <!-- SEO PREVIEW -->
+      <div id="panelPreview" style="margin-top:14px; display:none;">
+        <div class="grid">
+          <div>
+            <label>Catégorie (optionnel)</label>
+            <input id="seoCategory" placeholder="ex: Genius / Halo / Tape-In" />
+          </div>
+          <div>
+            <label>Limit</label>
+            <input id="seoLimit" value="50" />
+          </div>
+          <div>
+            <label>Only Missing</label>
+            <select id="seoOnlyMissing">
+              <option value="false" selected>false</option>
+              <option value="true">true</option>
+            </select>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button onclick="seoPreview()">Lancer Preview</button>
+          </div>
+        </div>
+
+        <div class="hint">
+          Preview = safe (lecture). Ça te montre ce que l’API propose de changer.
+        </div>
+
+        <div class="spacer"></div>
+        <pre id="previewOut">Aucun résultat…</pre>
+      </div>
+
+      <!-- SEO APPLY -->
+      <div id="panelApply" style="margin-top:14px; display:none;">
+        <div class="muted small">
+          ⚠️ Apply écrit dans la base. Idéalement, le secret reste côté serveur (Wix webMethod / Render proxy).  
+          Si tu mets le secret ici, il sera visible dans le navigateur. À toi de décider.
+        </div>
+
+        <div class="grid" style="margin-top:12px;">
+          <div>
+            <label>Product IDs (un par ligne ou séparés par virgule)</label>
+            <textarea id="applyIds" placeholder="123&#10;456&#10;789"></textarea>
+          </div>
+          <div>
+            <label>SEO Secret (optionnel mais requis si l’API l’exige)</label>
+            <input id="applySecret" placeholder="(si requis)" />
+            <div class="hint">Si ton API demande ?secret=..., colle-le ici (risque: visible côté client).</div>
+
+            <div class="spacer"></div>
+            <button onclick="seoApply()">Appliquer SEO</button>
+            <button class="btn-danger" onclick="clearApply()">Vider</button>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+        <pre id="applyOut">Aucun résultat…</pre>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+<script>
+/* ============ CFG & HELPERS ============ */
+function cfg(){
+  return {
+    apiUrl: localStorage.getItem('apiUrl') || document.getElementById('apiUrl').value,
+    apiKey: localStorage.getItem('apiKey') || document.getElementById('apiKey').value
+  };
+}
+function baseUrl(){
+  return (cfg().apiUrl || "").trim().replace(/\/+$/,"");
+}
+function saveCfg(){
+  localStorage.setItem('apiUrl', document.getElementById('apiUrl').value.trim());
+  localStorage.setItem('apiKey', document.getElementById('apiKey').value.trim());
+}
+function headers(){
+  const h = { "Content-Type":"application/json", "Accept":"application/json" };
+  const k = (cfg().apiKey || "").trim();
+  if (k) h["x-api-key"] = k;
+  return h;
+}
+function api(path){ return baseUrl() + path; }
+function setStatus(msg, ok=true){
+  const el=document.getElementById('testStatus');
+  el.textContent=msg;
+  el.className=(ok?'ok':'err')+' muted';
+}
+let toastTimer=null;
+function toast(msg, ok=true){
+  const el=document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast '+(ok?'ok':'err');
+  void el.offsetWidth;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove('show'), 2200);
+}
+function setApiPill(){
+  const el=document.getElementById('apiPill');
+  const u=baseUrl();
+  el.textContent = u || "—";
+  el.className = (u ? "ok" : "err");
+}
+function syncDerivedUrls(){
+  // refresh iframe src based on apiUrl
+  const frame = document.getElementById('swaggerFrame');
+  frame.src = api('/docs');
+  setApiPill();
+}
+
+/* ============ QUICK LINKS ============ */
+function openDocs(){ window.open(api('/docs'), '_blank', 'noopener,noreferrer'); }
+function openLastSync(){ window.open(api('/wix/sync/last'), '_blank', 'noopener,noreferrer'); }
+function openExportXls(){
+  // Entrepôt = 4 par défaut (ajuste si besoin)
+  const salonId = 4;
+  window.open(api(`/inventory/export.xlsx?salon_id=${encodeURIComponent(salonId)}`), '_blank', 'noopener,noreferrer');
+}
+
+/* ============ HEALTH ============ */
+async function testHealth(){
+  try{
+    const r = await fetch(api('/health'), { headers: headers() });
+    const txt = await r.text();
+    if(r.ok){
+      setStatus('Health OK', true);
+      toast('Health OK', true);
+    } else {
+      setStatus('Health ERROR ' + r.status, false);
+      toast('Health ERROR ' + r.status, false);
+    }
+  }catch(e){
+    setStatus('Impossible de joindre l’API', false);
+    toast('Impossible de joindre l’API', false);
+  }
+}
+
+/* ============ TABS ============ */
+function showTab(which){
+  const tabs = {
+    swagger: ['tabSwagger','panelSwagger'],
+    preview: ['tabSeoPreview','panelPreview'],
+    apply:  ['tabSeoApply','panelApply'],
+if('tabSeoApply')
+  };
+  // reset
+  document.getElementById('tabSwagger').classList.remove('active');
+  document.getElementById('tabSeoPreview').classList.remove('active');
+  document.getElementById('tabSeoApply').classList.remove('active');
+  document.getElementById('panelSwagger').style.display='none';
+  document.getElementById('panelPreview').style.display='none';
+  document.getElementById('panelApply').style.display='none';
+
+  if(which==='swagger'){
+    document.getElementById('tabSwagger').classList.add('active');
+    document.getElementById('panelSwagger').style.display='';
+  } else if(which==='preview'){
+    document.getElementById('tabSeoPreview').classList.add('active');
+    document.getElementById('panelPreview').style.display='';
+  } else {
+    document.getElementById('tabSeoApply').classList.add('active');
+    document.getElementById('panelApply').style.display='';
+  }
+}
+
+/* ============ SEO PREVIEW (safe) ============ */
+async function seoPreview(){
+  const category = document.getElementById('seoCategory').value.trim();
+  const limit = parseInt(document.getElementById('seoLimit').value || '50', 10) || 50;
+  const onlyMissing = document.getElementById('seoOnlyMissing').value === 'true';
+
+  const qs = new URLSearchParams();
+  qs.set('limit', String(limit));
+  qs.set('only_missing', String(onlyMissing));
+  if(category) qs.set('category', category);
+
+  const out = document.getElementById('previewOut');
+  out.textContent = '⏳ Preview en cours...';
+
+  try{
+    const r = await fetch(api(`/seo/preview?${qs.toString()}`), {
+      method:'POST',
+      headers: headers()
+    });
+    const txt = await r.text();
+    if(!r.ok){
+      out.textContent = `❌ ${r.status}\n` + txt;
+      toast('Preview SEO: erreur', false);
+      return;
+    }
+    out.textContent = txt;
+    toast('Preview SEO: OK', true);
+  }catch(e){
+    out.textContent = '❌ Impossible de joindre l’API';
+    toast('Preview SEO: impossible', false);
+  }
+}
+
+/* ============ SEO APPLY (danger) ============ */
+function clearApply(){
+  document.getElementById('applyIds').value='';
+  document.getElementById('applySecret').value='';
+  document.getElementById('applyOut').textContent='Aucun résultat…';
+}
+async function seoApply(){
+  const raw = document.getElementById('applyIds').value.trim();
+  const secret = document.getElementById('applySecret').value.trim();
+
+  const ids = raw.split(/[\s,;\n]+/g).map(x=>x.trim()).filter(Boolean);
+  const out = document.getElementById('applyOut');
+  if(ids.length === 0){
+    out.textContent = '⚠️ Ajoute au moins un productId.';
+    return;
+  }
+
+  const qs = new URLSearchParams();
+  qs.set('confirm','true');
+  if(secret) qs.set('secret', secret);
+
+  out.textContent = '⏳ Apply en cours...';
+
+  try{
+    const r = await fetch(api(`/seo/apply?${qs.toString()}`), {
+      method:'POST',
+      headers: headers(),
+      body: JSON.stringify(ids)
+    });
+    const txt = await r.text();
+    if(!r.ok){
+      out.textContent = `❌ ${r.status}\n` + txt;
+      toast('Apply SEO: erreur', false);
+      return;
+    }
+    out.textContent = txt;
+    toast('Apply SEO: OK', true);
+  }catch(e){
+    out.textContent = '❌ Impossible de joindre l’API';
+    toast('Apply SEO: impossible', false);
+  }
+}
+
+/* ============ BOOT ============ */
+(function init(){
+  // Defaults
+  const DEFAULT_API = "https://luxura-inventory-api.onrender.com";
+  if(!localStorage.getItem('apiUrl')){
+    localStorage.setItem('apiUrl', DEFAULT_API);
+    document.getElementById('apiUrl').value = DEFAULT_API;
+  } else {
+    document.getElementById('apiUrl').value = localStorage.getItem('apiUrl');
+  }
+  if(localStorage.getItem('apiKey')){
+    document.getElementById('apiKey').value = localStorage.getItem('apiKey');
+  }
+  syncDerivedUrls();
+})();
+</script>
+</body>
+</html>
