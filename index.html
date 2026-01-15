@@ -40,6 +40,19 @@
       color:#111;cursor:pointer;font-weight:800
     }
     .btn-ghost{background:transparent;color:var(--fg);border-color:var(--line);font-weight:700}
+    .btn-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      color:var(--fg);
+      text-decoration:none;
+      font-weight:800;
+      background:transparent;
+    }
+    .btn-link:hover{ border-color: var(--gold-2); }
     .btn-danger{background:transparent;color:var(--danger);border-color:#3a1b1b}
     .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .tabs{display:flex;gap:8px;flex-wrap:wrap}
@@ -118,13 +131,14 @@
       <div class="spacer"></div>
 
       <div class="toolbar">
-        <button onclick="testHealth()">Tester Health</button>
-        <button class="btn-ghost" onclick="openDocs()">Swagger /docs</button>
-        <button class="btn-ghost" onclick="openLastSync()">Dernier Sync</button>
-        <button class="btn-ghost" onclick="openExportXls()">Export XLS (Entrepôt)</button>
-        <span id="testStatus" class="muted"></span>
-      </div>
-    </div>
+  <button onclick="testHealth()">Tester Health</button>
+
+  <a class="btn-link" id="lnkDocs" target="_blank" rel="noopener noreferrer">Swagger /docs</a>
+  <a class="btn-link" id="lnkLastSync" target="_blank" rel="noopener noreferrer">Dernier Sync</a>
+  <a class="btn-link" id="lnkXls" target="_blank" rel="noopener noreferrer">Export XLS (Entrepôt)</a>
+
+  <span id="testStatus" class="muted"></span>
+</div>
 
     <!-- TABS -->
     <div class="card" style="margin-bottom:16px;">
@@ -249,10 +263,20 @@ function setApiPill(){
   el.className = (u ? "ok" : "err");
 }
 function syncDerivedUrls(){
-  // refresh iframe src based on apiUrl
-  const frame = document.getElementById('swaggerFrame');
-  frame.src = api('/docs');
   setApiPill();
+
+  const docs = api('/docs');
+  const last = api('/wix/sync/last');
+  const xls  = api('/inventory/export.xlsx?salon_id=4');
+
+  document.getElementById('swaggerFrame').src = docs;
+
+  const l1 = document.getElementById('lnkDocs');
+  const l2 = document.getElementById('lnkLastSync');
+  const l3 = document.getElementById('lnkXls');
+  if(l1) l1.href = docs;
+  if(l2) l2.href = last;
+  if(l3) l3.href = xls;
 }
 
 /* ============ QUICK LINKS ============ */
